@@ -1,36 +1,48 @@
+using RoomReservation.Data.Database;
+using RoomReservation.Data.Repositories;
+
 namespace RoomReservation.Web
 {
 	public class Program
 	{
-		public static void Main(string[] args)
+		public static async Task Main(string[] args)
 		{
 			var builder = WebApplication.CreateBuilder(args);
 
-			// Add services to the container.
 			builder.Services.AddControllersWithViews();
+
+			var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
+				?? "Data Source=room_reservation.db";
+
+			builder.Services.AddSingleton(new DbConnectionFactory(connectionString));
+			builder.Services.AddScoped<DatabaseInitializer>();
+			builder.Services.AddScoped<RoomRepository>();
 
 			var app = builder.Build();
 
-			// Configure the HTTP request pipeline.
+			using (var scope = app.Services.CreateScope())
+			{
+				var databaseInitializer = scope.ServiceProvider.GetRequiredService<DatabaseInitializer>();
+				await databaseInitializer.InitializeAsync();
+			}
+
 			if (!app.Environment.IsDevelopment())
 			{
 				app.UseExceptionHandler("/Home/Error");
-				// The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
 				app.UseHsts();
 			}
 
 			app.UseHttpsRedirection();
+			app.UseStaticFiles();
+
 			app.UseRouting();
 
 			app.UseAuthorization();
 
-			app.MapStaticAssets();
 			app.MapControllerRoute(
 				name: "default",
-				pattern: "{controller=Home}/{action=Index}/{id?}")
-				.WithStaticAssets();
+				pattern: "{controller=Home}/{action=Index}/{id?}");
 
-			app.Run();
 		}
 	}
 }
