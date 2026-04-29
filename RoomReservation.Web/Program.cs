@@ -17,6 +17,7 @@ namespace RoomReservation.Web
 			builder.Services.AddSingleton(new DbConnectionFactory(connectionString));
 			builder.Services.AddScoped<DatabaseInitializer>();
 			builder.Services.AddScoped<RoomRepository>();
+			builder.Services.AddControllersWithViews();
 
 			var app = builder.Build();
 
@@ -42,6 +43,10 @@ namespace RoomReservation.Web
 			app.MapControllerRoute(
 				name: "default",
 				pattern: "{controller=Home}/{action=Index}/{id?}");
+
+			app.MapControllers();
+
+			app.Run();
 
 		}
 	}
