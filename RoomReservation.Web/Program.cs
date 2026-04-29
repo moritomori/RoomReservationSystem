@@ -1,5 +1,6 @@
 using RoomReservation.Data.Database;
 using RoomReservation.Data.Repositories;
+using RoomReservation.Web.Middleware;
 
 namespace RoomReservation.Web
 {
@@ -37,6 +38,8 @@ namespace RoomReservation.Web
 			app.UseStaticFiles();
 
 			app.UseRouting();
+
+			app.UseMiddleware<ApiTokenMiddleware>();
 
 			app.UseAuthorization();
 
