@@ -18,16 +18,16 @@ namespace RoomReservation.Data.Repositories
 			using var connection = _connectionFactory.CreateConnection();
 
 			string sql = @"
-SELECT 
-    id AS Id,
-    name AS Name,
-    capacity AS Capacity,
-    equipment AS Equipment,
-    max_reservation_duration_minutes AS MaxReservationDurationMinutes,
-    created_at AS CreatedAt
-FROM rooms
-ORDER BY name;
-";
+				SELECT 
+					id AS Id,
+					name AS Name,
+					capacity AS Capacity,
+					equipment AS Equipment,
+					max_reservation_duration_minutes AS MaxReservationDurationMinutes,
+					created_at AS CreatedAt
+				FROM rooms
+				ORDER BY name;
+				";
 
 			return await connection.QueryAsync<Room>(sql);
 		}
@@ -37,16 +37,16 @@ ORDER BY name;
 			using var connection = _connectionFactory.CreateConnection();
 
 			string sql = @"
-SELECT 
-    id AS Id,
-    name AS Name,
-    capacity AS Capacity,
-    equipment AS Equipment,
-    max_reservation_duration_minutes AS MaxReservationDurationMinutes,
-    created_at AS CreatedAt
-FROM rooms
-WHERE id = @Id;
-";
+				SELECT 
+					id AS Id,
+					name AS Name,
+					capacity AS Capacity,
+					equipment AS Equipment,
+					max_reservation_duration_minutes AS MaxReservationDurationMinutes,
+					created_at AS CreatedAt
+				FROM rooms
+				WHERE id = @Id;
+				";
 
 			return await connection.QueryFirstOrDefaultAsync<Room>(sql, new { Id = id });
 		}
@@ -56,13 +56,13 @@ WHERE id = @Id;
 			using var connection = _connectionFactory.CreateConnection();
 
 			string sql = @"
-INSERT INTO rooms 
-    (name, capacity, equipment, max_reservation_duration_minutes)
-VALUES 
-    (@Name, @Capacity, @Equipment, @MaxReservationDurationMinutes);
+				INSERT INTO rooms 
+					(name, capacity, equipment, max_reservation_duration_minutes)
+				VALUES 
+					(@Name, @Capacity, @Equipment, @MaxReservationDurationMinutes);
 
-SELECT last_insert_rowid();
-";
+				SELECT last_insert_rowid();
+				";
 
 			return await connection.ExecuteScalarAsync<int>(sql, room);
 		}
@@ -72,14 +72,14 @@ SELECT last_insert_rowid();
 			using var connection = _connectionFactory.CreateConnection();
 
 			string sql = @"
-UPDATE rooms
-SET 
-    name = @Name,
-    capacity = @Capacity,
-    equipment = @Equipment,
-    max_reservation_duration_minutes = @MaxReservationDurationMinutes
-WHERE id = @Id;
-";
+				UPDATE rooms
+				SET 
+					name = @Name,
+					capacity = @Capacity,
+					equipment = @Equipment,
+					max_reservation_duration_minutes = @MaxReservationDurationMinutes
+				WHERE id = @Id;
+				";
 
 			int affectedRows = await connection.ExecuteAsync(sql, room);
 			return affectedRows > 0;
@@ -90,9 +90,9 @@ WHERE id = @Id;
 			using var connection = _connectionFactory.CreateConnection();
 
 			string sql = @"
-DELETE FROM rooms
-WHERE id = @Id;
-";
+				DELETE FROM rooms
+				WHERE id = @Id;
+				";
 
 			int affectedRows = await connection.ExecuteAsync(sql, new { Id = id });
 			return affectedRows > 0;
