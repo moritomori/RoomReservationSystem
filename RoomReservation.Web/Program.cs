@@ -1,6 +1,7 @@
 using RoomReservation.Data.Database;
 using RoomReservation.Data.Repositories;
 using RoomReservation.Web.Middleware;
+using RoomReservation.Web.Services;
 
 namespace RoomReservation.Web
 {
@@ -18,6 +19,8 @@ namespace RoomReservation.Web
 			builder.Services.AddSingleton(new DbConnectionFactory(connectionString));
 			builder.Services.AddScoped<DatabaseInitializer>();
 			builder.Services.AddScoped<RoomRepository>();
+			builder.Services.AddScoped<UserRepository>();
+			builder.Services.AddScoped<PasswordHasher>();
 			builder.Services.AddControllersWithViews();
 
 			var app = builder.Build();
