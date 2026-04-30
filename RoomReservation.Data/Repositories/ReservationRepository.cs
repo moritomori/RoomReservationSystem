@@ -1,0 +1,183 @@
+﻿using Dapper;
+using RoomReservation.Common;
+using RoomReservation.Data.Database;
+using RoomReservation.Domain.Models;
+
+namespace RoomReservation.Data.Repositories
+{
+	public class ReservationRepository
+	{
+		private readonly DbConnectionFactory _connectionFactory;
+
+		public ReservationRepository(DbConnectionFactory connectionFactory)
+		{
+			_connectionFactory = connectionFactory;
+		}
+
+		public async Task<IEnumerable<Reservation>> GetAllAsync()
+		{
+			using var connection = _connectionFactory.CreateConnection();
+
+			string sql = @"
+				SELECT
+					id AS Id,
+					start_time AS StartTime,
+					end_time AS EndTime,
+					purpose AS Purpose,
+					number_of_people AS NumberOfPeople,
+					user_id AS UserId,
+					room_id AS RoomId,
+					status AS Status,
+					created_at AS CreatedAt
+				FROM reservations
+				ORDER BY start_time DESC;
+				";
+
+			return await connection.QueryAsync<Reservation>(sql);
+		}
+
+		public async Task<IEnumerable<Reservation>> GetByUserIdAsync(int userId)
+		{
+			using var connection = _connectionFactory.CreateConnection();
+
+			string sql = @"
+				SELECT
+					id AS Id,
+					start_time AS StartTime,
+					end_time AS EndTime,
+					purpose AS Purpose,
+					number_of_people AS NumberOfPeople,
+					user_id AS UserId,
+					room_id AS RoomId,
+					status AS Status,
+					created_at AS CreatedAt
+				FROM reservations
+				WHERE user_id = @UserId
+				ORDER BY start_time DESC;
+				";
+
+			return await connection.QueryAsync<Reservation>(sql, new { UserId = userId });
+		}
+
+		public async Task<Reservation?> GetByIdAsync(int id)
+		{
+			using var connection = _connectionFactory.CreateConnection();
+
+			string sql = @"
+				SELECT
+					id AS Id,
+					start_time AS StartTime,
+					end_time AS EndTime,
+					purpose AS Purpose,
+					number_of_people AS NumberOfPeople,
+					user_id AS UserId,
+					room_id AS RoomId,
+					status AS Status,
+					created_at AS CreatedAt
+				FROM reservations
+				WHERE id = @Id;
+				";
+
+			return await connection.QueryFirstOrDefaultAsync<Reservation>(sql, new { Id = id });
+		}
+
+		public async Task<bool> HasCollisionAsync(int roomId, DateTime startTime, DateTime endTime, int? ignoredReservationId = null)
+		{
+			using var connection = _connectionFactory.CreateConnection();
+
+			string sql = @"
+				SELECT COUNT(*)
+				FROM reservations
+				WHERE room_id = @RoomId
+				  AND status = @ActiveStatus
+				  AND (@IgnoredReservationId IS NULL OR id != @IgnoredReservationId)
+				  AND start_time < @EndTime
+				  AND end_time > @StartTime;
+				";
+
+			int count = await connection.ExecuteScalarAsync<int>(sql, new
+			{
+				RoomId = roomId,
+				StartTime = startTime,
+				EndTime = endTime,
+				IgnoredReservationId = ignoredReservationId,
+				ActiveStatus = (int)Status.Active
+			});
+
+			return count > 0;
+		}
+
+		public async Task<int> CreateAsync(Reservation reservation)
+		{
+			using var connection = _connectionFactory.CreateConnection();
+
+			string sql = @"
+				INSERT INTO reservations
+					(start_time, end_time, purpose, number_of_people, user_id, room_id, status)
+				VALUES
+					(@StartTime, @EndTime, @Purpose, @NumberOfPeople, @UserId, @RoomId, @Status);
+
+				SELECT last_insert_rowid();
+				";
+
+			return await connection.ExecuteScalarAsync<int>(sql, reservation);
+		}
+
+		public async Task<bool> UpdateAsync(Reservation reservation)
+		{
+			using var connection = _connectionFactory.CreateConnection();
+
+			string sql = @"
+				UPDATE reservations
+				SET
+					start_time = @StartTime,
+					end_time = @EndTime,
+					purpose = @Purpose,
+					number_of_people = @NumberOfPeople
+				WHERE id = @Id;
+				";
+
+			int affectedRows = await connection.ExecuteAsync(sql, reservation);
+			return affectedRows > 0;
+		}
+
+		public async Task<bool> CancelAsync(int id)
+		{
+			using var connection = _connectionFactory.CreateConnection();
+
+			string sql = @"
+				UPDATE reservations
+				SET status = @CancelledStatus
+				WHERE id = @Id;
+				";
+
+			int affectedRows = await connection.ExecuteAsync(sql, new
+			{
+				Id = id,
+				CancelledStatus = (int)Status.Cancelled
+			});
+
+			return affectedRows > 0;
+		}
+
+		public async Task AddHistoryAsync(int reservationId, string fieldName, string? oldValue, string? newValue)
+		{
+			using var connection = _connectionFactory.CreateConnection();
+
+			string sql = @"
+				INSERT INTO reservation_history
+					(reservation_id, field_name, old_value, new_value)
+				VALUES
+					(@ReservationId, @FieldName, @OldValue, @NewValue);
+				";
+
+			await connection.ExecuteAsync(sql, new
+			{
+				ReservationId = reservationId,
+				FieldName = fieldName,
+				OldValue = oldValue,
+				NewValue = newValue
+			});
+		}
+	}
+}

@@ -21,6 +21,7 @@ namespace RoomReservation.Web
 			builder.Services.AddScoped<RoomRepository>();
 			builder.Services.AddScoped<UserRepository>();
 			builder.Services.AddScoped<PasswordHasher>();
+			builder.Services.AddScoped<ReservationRepository>();
 			builder.Services.AddControllersWithViews();
 
 			var app = builder.Build();
