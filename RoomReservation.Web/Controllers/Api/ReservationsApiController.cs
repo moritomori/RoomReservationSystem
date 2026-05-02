@@ -44,6 +44,20 @@ namespace RoomReservation.Web.Controllers.Api
 			return Ok(reservation);
 		}
 
+		[HttpGet("{id}/history")]
+		public async Task<IActionResult> GetHistory(int id)
+		{
+			var reservation = await _reservationRepository.GetByIdAsync(id);
+
+			if (reservation == null)
+			{
+				return NotFound();
+			}
+
+			var history = await _reservationRepository.GetHistoryAsync(id);
+			return Ok(history);
+		}
+
 		[HttpGet("user/{userId}")]
 		public async Task<IActionResult> GetByUserId(int userId)
 		{

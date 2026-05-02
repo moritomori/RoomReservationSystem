@@ -179,5 +179,55 @@ namespace RoomReservation.Data.Repositories
 				NewValue = newValue
 			});
 		}
+
+		public async Task<IEnumerable<ReservationHistory>> GetHistoryAsync(int reservationId)
+		{
+			using var connection = _connectionFactory.CreateConnection();
+
+			string sql = @"
+				SELECT
+					id AS Id,
+					reservation_id AS ReservationId,
+					field_name AS FieldName,
+					old_value AS OldValue,
+					new_value AS NewValue,
+					changed_at AS ChangedAt
+				FROM reservation_history
+				WHERE reservation_id = @ReservationId
+				ORDER BY changed_at DESC;
+				";
+
+			return await connection.QueryAsync<ReservationHistory>(sql, new
+			{
+				ReservationId = reservationId
+			});
+		}
+
+		public async Task<IEnumerable<object>> GetRoomUsageStatisticsAsync(DateTime from, DateTime to)
+		{
+			using var connection = _connectionFactory.CreateConnection();
+
+			string sql = @"
+				SELECT
+					r.id AS RoomId,
+					r.name AS RoomName,
+					COUNT(res.id) AS ReservationCount,
+					COALESCE(SUM((julianday(res.end_time) - julianday(res.start_time)) * 24.0), 0) AS ReservedHours
+				FROM rooms r
+				LEFT JOIN reservations res ON r.id = res.room_id
+					AND res.status = @ActiveStatus
+					AND res.start_time >= @From
+					AND res.end_time <= @To
+				GROUP BY r.id, r.name
+				ORDER BY ReservedHours DESC;
+				";
+
+			return await connection.QueryAsync<object>(sql, new
+			{
+				From = from,
+				To = to,
+				ActiveStatus = (int)Status.Active
+			});
+		}
 	}
 }
