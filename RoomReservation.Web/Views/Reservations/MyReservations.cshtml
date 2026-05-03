@@ -1,0 +1,54 @@
+﻿@model IEnumerable<RoomReservation.Domain.Models.Reservation>
+@using RoomReservation.Common
+
+@{
+    ViewData["Title"] = "My reservations";
+}
+
+<h1>My reservations</h1>
+
+<p>
+    <a asp-controller="Rooms" asp-action="Index">Back to rooms</a>
+</p>
+
+<table border="1" cellpadding="6">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Room ID</th>
+            <th>Start</th>
+            <th>End</th>
+            <th>Purpose</th>
+            <th>People</th>
+            <th>Status</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var reservation in Model)
+        {
+            <tr>
+                <td>@reservation.Id</td>
+                <td>@reservation.RoomId</td>
+                <td>@reservation.StartTime</td>
+                <td>@reservation.EndTime</td>
+                <td>@reservation.Purpose</td>
+                <td>@reservation.NumberOfPeople</td>
+                <td>@reservation.Status</td>
+                <td>
+                    @if (reservation.Status == Status.Active && reservation.StartTime > DateTime.Now)
+                    {
+                        <form asp-action="Cancel" method="post">
+                            <input type="hidden" name="id" value="@reservation.Id" />
+                            <button type="submit">Cancel</button>
+                        </form>
+                    }
+                    else
+                    {
+                        <span>Not available</span>
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

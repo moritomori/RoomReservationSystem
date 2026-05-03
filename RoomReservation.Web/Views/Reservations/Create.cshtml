@@ -1,0 +1,46 @@
+﻿@model RoomReservation.Web.ViewModels.ReservationCreateViewModel
+
+@{
+    ViewData["Title"] = "Create reservation";
+}
+
+<h1>Create reservation</h1>
+
+<h3>Room: @Model.RoomName</h3>
+
+<form asp-action="Create" method="post">
+    <div asp-validation-summary="All"></div>
+
+    <input type="hidden" asp-for="RoomId" />
+    <input type="hidden" asp-for="RoomName" />
+
+    <div>
+        <label asp-for="StartTime"></label>
+        <input asp-for="StartTime" type="datetime" />
+        <span asp-validation-for="StartTime"></span>
+    </div>
+
+    <div>
+        <label asp-for="EndTime"></label>
+        <input asp-for="EndTime" type="datetime-local" />
+        <span asp-validation-for="EndTime"></span>
+    </div>
+
+    <div>
+        <label asp-for="Purpose"></label>
+        <textarea asp-for="Purpose"></textarea>
+        <span asp-validation-for="Purpose"></span>
+    </div>
+
+    <div>
+        <label asp-for="NumberOfPeople"></label>
+        <input asp-for="NumberOfPeople" />
+        <span asp-validation-for="NumberOfPeople"></span>
+    </div>
+
+    <button type="submit">Create reservation</button>
+</form>
+
+<p>
+    <a asp-controller="Rooms" asp-action="Index">Back to rooms</a>
+</p>
