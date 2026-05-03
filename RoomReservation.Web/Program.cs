@@ -23,6 +23,7 @@ namespace RoomReservation.Web
 			builder.Services.AddScoped<PasswordHasher>();
 			builder.Services.AddScoped<ReservationRepository>();
 			builder.Services.AddControllersWithViews();
+			builder.Services.AddSession();
 
 			var app = builder.Build();
 
@@ -44,6 +45,8 @@ namespace RoomReservation.Web
 			app.UseRouting();
 
 			app.UseMiddleware<ApiTokenMiddleware>();
+
+			app.UseSession();
 
 			app.UseAuthorization();
 

@@ -1,0 +1,29 @@
+﻿@model RoomReservation.Web.ViewModels.LoginViewModel
+
+@{
+    ViewData["Title"] = "Login";
+}
+
+<h1>Login</h1>
+
+<form asp-action="Login" method="post">
+    <div asp-validation-summary="All"></div>
+
+    <div>
+        <label asp-for="Login"></label>
+        <input asp-for="Login" />
+        <span asp-validation-for="Login"></span>
+    </div>
+
+    <div>
+        <label asp-for="Password"></label>
+        <input asp-for="Password" />
+        <span asp-validation-for="Password"></span>
+    </div>
+
+    <button type="submit">Login</button>
+</form>
+
+<p>
+    <a asp-controller="Account" asp-action="Register">Create new account</a>
+</p>
