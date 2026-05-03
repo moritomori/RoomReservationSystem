@@ -1,0 +1,45 @@
+﻿@model IEnumerable<RoomReservation.Domain.Models.Room>
+
+@{
+    ViewData["Title"] = "Rooms";
+}
+
+<h1>Rooms</h1>
+
+<p>
+    <a asp-controller="Reservations" asp-action="MyReservations">My reservations</a>
+</p>
+
+<table border="1" cellpadding="6">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Capacity</th>
+            <th>Equipment</th>
+            <th>Max duration</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var room in Model)
+        {
+            <tr>
+                <td>@room.Name</td>
+                <td>@room.Capacity</td>
+                <td>@room.Equipment</td>
+                <td>@room.MaxReservationDurationMinutes minutes</td>
+                <td>
+                    <a asp-controller="Reservations"
+                       asp-action="Create"
+                       asp-route-roomId="@room.Id">
+                        Reserve
+                    </a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<form asp-controller="Account" asp-action="Logout" method="post" style="margin-top:20px;">
+    <button type="submit">Logout</button>
+</form>
