@@ -9,8 +9,11 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="System.Net.Http.Json" Version="10.0.7" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\RoomReservation.Common\RoomReservation.Common.csproj" />
-    <ProjectReference Include="..\RoomReservation.Data\RoomReservation.Data.csproj" />
     <ProjectReference Include="..\RoomReservation.Domain\RoomReservation.Domain.csproj" />
   </ItemGroup>
 
