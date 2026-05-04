@@ -32,6 +32,32 @@ namespace RoomReservation.Data.Repositories
 			return await connection.QueryAsync<Room>(sql);
 		}
 
+		public async Task<IEnumerable<Room>> GetAllSortedAsync(string? sort)
+		{
+			using var connection = _connectionFactory.CreateConnection();
+
+			string orderBy = sort switch
+			{
+				"capacity" => "capacity DESC",
+				"name" => "name ASC",
+				_ => "id ASC"
+			};
+
+			string sql = $@"
+				SELECT 
+					id AS Id,
+					name AS Name,
+					capacity AS Capacity,
+					equipment AS Equipment,
+					max_reservation_duration_minutes AS MaxReservationDurationMinutes,
+					created_at AS CreatedAt
+				FROM rooms
+				ORDER BY {orderBy};
+				";
+
+			return await connection.QueryAsync<Room>(sql);
+		}
+
 		public async Task<Room?> GetByIdAsync(int id)
 		{
 			using var connection = _connectionFactory.CreateConnection();
