@@ -229,5 +229,27 @@ namespace RoomReservation.Data.Repositories
 				ActiveStatus = (int)Status.Active
 			});
 		}
+		public async Task<IEnumerable<ReservationListItemDto>> GetListByUserIdAsync(int userId)
+		{
+			using var connection = _connectionFactory.CreateConnection();
+
+			string sql = @"
+				SELECT
+					res.id AS Id,
+					r.name AS RoomName,
+					res.start_time AS StartTime,
+					res.end_time AS EndTime,
+					res.purpose AS Purpose,
+					res.number_of_people AS NumberOfPeople,
+					res.status AS Status
+				FROM reservations res
+				JOIN rooms r ON res.room_id = r.id
+				WHERE res.user_id = @UserId
+				ORDER BY res.start_time DESC;
+				";
+
+			return await connection.QueryAsync<ReservationListItemDto>(sql, new { UserId = userId });
+		}
 	}
+
 }

@@ -28,7 +28,7 @@ namespace RoomReservation.Web.Controllers
 				return RedirectToAction("Login", "Account");
 			}
 
-			var reservations = await _reservationRepository.GetByUserIdAsync(userId.Value);
+			var reservations = await _reservationRepository.GetListByUserIdAsync(userId.Value);
 			return View(reservations);
 		}
 

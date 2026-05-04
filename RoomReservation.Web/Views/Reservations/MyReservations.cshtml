@@ -1,4 +1,4 @@
-﻿@model IEnumerable<RoomReservation.Domain.Models.Reservation>
+﻿@model IEnumerable<RoomReservation.Common.DTOs.ReservationListItemDto>
 @using RoomReservation.Common
 
 @{
@@ -15,7 +15,7 @@
     <thead>
         <tr>
             <th>ID</th>
-            <th>Room ID</th>
+            <th>Room Name</th>
             <th>Start</th>
             <th>End</th>
             <th>Purpose</th>
@@ -29,7 +29,7 @@
         {
             <tr>
                 <td>@reservation.Id</td>
-                <td>@reservation.RoomId</td>
+                <td>@reservation.RoomName</td>
                 <td>@reservation.StartTime</td>
                 <td>@reservation.EndTime</td>
                 <td>@reservation.Purpose</td>
