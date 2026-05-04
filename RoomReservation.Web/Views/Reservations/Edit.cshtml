@@ -1,0 +1,47 @@
+﻿@model RoomReservation.Web.ViewModels.ReservationEditViewModel
+
+@{
+    ViewData["Title"] = "Edit reservation";
+}
+
+<h1>Edit reservation</h1>
+
+<h3>Room: @Model.RoomName</h3>
+
+<form asp-action="Edit" method="post">
+    <div asp-validation-summary="All"></div>
+
+    <input type="hidden" asp-for="Id" />
+    <input type="hidden" asp-for="RoomId" />
+    <input type="hidden" asp-for="RoomName" />
+
+    <div>
+        <label asp-for="StartTime"></label>
+        <input asp-for="StartTime" type="datetime-local" />
+        <span asp-validation-for="StartTime"></span>
+    </div>
+
+    <div>
+        <label asp-for="EndTime"></label>
+        <input asp-for="EndTime" type="datetime-local" />
+        <span asp-validation-for="EndTime"></span>
+    </div>
+
+    <div>
+        <label asp-for="Purpose"></label>
+        <textarea asp-for="Purpose"></textarea>
+        <span asp-validation-for="Purpose"></span>
+    </div>
+
+    <div>
+        <label asp-for="NumberOfPeople"></label>
+        <input asp-for="NumberOfPeople" />
+        <span asp-validation-for="NumberOfPeople"></span>
+    </div>
+
+    <button type="submit">Save changes</button>
+</form>
+
+<p>
+    <a asp-action="MyReservations">Back to my reservations</a>
+</p>

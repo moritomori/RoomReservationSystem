@@ -141,6 +141,180 @@ namespace RoomReservation.Web.Controllers
 			return RedirectToAction(nameof(MyReservations));
 		}
 
+		[HttpGet]
+		public async Task<IActionResult> Edit(int id)
+		{
+			int? userId = HttpContext.Session.GetInt32("UserId");
+
+			if (userId == null)
+			{
+				return RedirectToAction("Login", "Account");
+			}
+
+			var reservation = await _reservationRepository.GetByIdAsync(id);
+
+			if (reservation == null)
+			{
+				return NotFound();
+			}
+
+			if (reservation.UserId != userId.Value)
+			{
+				return Forbid();
+			}
+
+			if (reservation.Status == Status.Cancelled || reservation.StartTime <= DateTime.Now)
+			{
+				return RedirectToAction(nameof(MyReservations));
+			}
+
+			var room = await _roomRepository.GetByIdAsync(reservation.RoomId);
+
+			if (room == null)
+			{
+				return NotFound();
+			}
+
+			var model = new ReservationEditViewModel
+			{
+				Id = reservation.Id,
+				RoomId = reservation.RoomId,
+				RoomName = room.Name,
+				StartTime = reservation.StartTime,
+				EndTime = reservation.EndTime,
+				Purpose = reservation.Purpose,
+				NumberOfPeople = reservation.NumberOfPeople
+			};
+
+			return View(model);
+		}
+
+		[HttpPost]
+		public async Task<IActionResult> Edit(ReservationEditViewModel model)
+		{
+			int? userId = HttpContext.Session.GetInt32("UserId");
+
+			if (userId == null)
+			{
+				return RedirectToAction("Login", "Account");
+			}
+
+			var reservation = await _reservationRepository.GetByIdAsync(model.Id);
+
+			if (reservation == null)
+			{
+				return NotFound();
+			}
+
+			if (reservation.UserId != userId.Value)
+			{
+				return Forbid();
+			}
+
+			if (reservation.Status == Status.Cancelled || reservation.StartTime <= DateTime.Now)
+			{
+				return RedirectToAction(nameof(MyReservations));
+			}
+
+			var room = await _roomRepository.GetByIdAsync(reservation.RoomId);
+
+			if (room == null)
+			{
+				return NotFound();
+			}
+
+			model.RoomName = room.Name;
+			model.RoomId = room.Id;
+
+			if (!ModelState.IsValid)
+			{
+				return View(model);
+			}
+
+			if (model.StartTime <= DateTime.Now)
+			{
+				ModelState.AddModelError(nameof(model.StartTime), "Reservation must be only for future time.");
+				return View(model);
+			}
+
+			if (model.EndTime <= model.StartTime)
+			{
+				ModelState.AddModelError(nameof(model.EndTime), "End time must be later than start time.");
+				return View(model);
+			}
+
+			if (model.NumberOfPeople > room.Capacity)
+			{
+				ModelState.AddModelError(nameof(model.NumberOfPeople), "Number of people cannot be greater than room capacity.");
+				return View(model);
+			}
+
+			double durationMinutes = (model.EndTime - model.StartTime).TotalMinutes;
+
+			if (durationMinutes > room.MaxReservationDurationMinutes)
+			{
+				ModelState.AddModelError(nameof(model.EndTime), "Reservation is longer than maximum allowed duration for this room.");
+				return View(model);
+			}
+
+			bool hasCollision = await _reservationRepository.HasCollisionAsync(
+				reservation.RoomId,
+				model.StartTime,
+				model.EndTime,
+				reservation.Id);
+
+			if (hasCollision)
+			{
+				ModelState.AddModelError("", "Selected room is already reserved in this time interval.");
+				return View(model);
+			}
+
+			if (reservation.StartTime != model.StartTime)
+			{
+				await _reservationRepository.AddHistoryAsync(
+					reservation.Id,
+					"StartTime",
+					reservation.StartTime.ToString("s"),
+					model.StartTime.ToString("s"));
+			}
+
+			if (reservation.EndTime != model.EndTime)
+			{
+				await _reservationRepository.AddHistoryAsync(
+					reservation.Id,
+					"EndTime",
+					reservation.EndTime.ToString("s"),
+					model.EndTime.ToString("s"));
+			}
+
+			if (reservation.Purpose != model.Purpose)
+			{
+				await _reservationRepository.AddHistoryAsync(
+					reservation.Id,
+					"Purpose",
+					reservation.Purpose,
+					model.Purpose);
+			}
+
+			if (reservation.NumberOfPeople != model.NumberOfPeople)
+			{
+				await _reservationRepository.AddHistoryAsync(
+					reservation.Id,
+					"NumberOfPeople",
+					reservation.NumberOfPeople.ToString(),
+					model.NumberOfPeople.ToString());
+			}
+
+			reservation.StartTime = model.StartTime;
+			reservation.EndTime = model.EndTime;
+			reservation.Purpose = model.Purpose;
+			reservation.NumberOfPeople = model.NumberOfPeople;
+
+			await _reservationRepository.UpdateAsync(reservation);
+
+			return RedirectToAction(nameof(MyReservations));
+		}
+
 		[HttpPost]
 		public async Task<IActionResult> Cancel(int id)
 		{
