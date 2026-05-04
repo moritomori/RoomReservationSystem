@@ -79,11 +79,18 @@ namespace RoomReservation.Web.Controllers
 			return RedirectToAction("Index", "Rooms");
 		}
 
-		[HttpPost]
+		//[HttpPost]
+		//public IActionResult Logout()
+		//{
+		//	HttpContext.Session.Clear();
+		//	return RedirectToAction(nameof(Login));
+		//}
+
 		public IActionResult Logout()
 		{
 			HttpContext.Session.Clear();
-			return RedirectToAction(nameof(Login));
+
+			return RedirectToAction("Index", "Home");
 		}
 	}
 }

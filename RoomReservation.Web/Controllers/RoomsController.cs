@@ -17,7 +17,7 @@ namespace RoomReservation.Web.Controllers
 			_reservationRepository = reservationRepository;
 		}
 
-		public async Task<IActionResult> Index(DateTime? from, DateTime? to, int? minCapacity)
+		public async Task<IActionResult> Index(DateTime? from, DateTime? to, int? minCapacity, string? sort)
 		{
 			int? userId = HttpContext.Session.GetInt32("UserId");
 
@@ -26,7 +26,7 @@ namespace RoomReservation.Web.Controllers
 				return RedirectToAction("Login", "Account");
 			}
 
-			var rooms = await _roomRepository.GetAllAsync();
+			var rooms = await _roomRepository.GetAllSortedAsync(sort);
 
 			if (minCapacity.HasValue)
 			{
