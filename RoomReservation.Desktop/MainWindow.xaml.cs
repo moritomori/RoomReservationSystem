@@ -44,6 +44,44 @@ namespace RoomReservation.Desktop
 			}
 		}
 
+		private async void SaveRoom_Click(object sender, RoutedEventArgs e)
+		{
+			if (RoomsGrid.SelectedItem is not Room room)
+			{
+				MessageBox.Show("Select room first.");
+				return;
+			}
+
+			if (string.IsNullOrWhiteSpace(room.Name))
+			{
+				MessageBox.Show("Room name is required.");
+				return;
+			}
+
+			if (room.Capacity <= 0)
+			{
+				MessageBox.Show("Capacity must be greater than zero.");
+				return;
+			}
+
+			if (room.MaxReservationDurationMinutes <= 0)
+			{
+				MessageBox.Show("Max duration must be greater than zero.");
+				return;
+			}
+
+			try
+			{
+				await _apiClient.UpdateRoomAsync(room);
+				RoomsGrid.ItemsSource = await _apiClient.GetRoomsAsync();
+				MessageBox.Show("Room saved.");
+			}
+			catch (Exception ex)
+			{
+				MessageBox.Show("Cannot save room: " + ex.Message);
+			}
+		}
+
 		private async void DeleteRoom_Click(object sender, RoutedEventArgs e)
 		{
 			if (RoomsGrid.SelectedItem is not Room room)

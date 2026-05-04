@@ -56,5 +56,11 @@ namespace RoomReservation.Desktop.Services
 			var response = await _httpClient.PostAsync($"api/reservations/{id}/cancel", null);
 			response.EnsureSuccessStatusCode();
 		}
+
+		public async Task UpdateRoomAsync(Room room)
+		{
+			var response = await _httpClient.PutAsJsonAsync($"api/rooms/{room.Id}", room);
+			response.EnsureSuccessStatusCode();
+		}
 	}
 }
