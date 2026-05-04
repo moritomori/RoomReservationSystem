@@ -254,15 +254,35 @@ namespace RoomReservation.Data.Repositories
 		public async Task<bool> DeleteAsync(int id)
 		{
 			using var connection = _connectionFactory.CreateConnection();
+			connection.Open();
 
-			string sql = @"
-				DELETE FROM reservations
-				WHERE id = @Id;
-				";
+			using var transaction = connection.BeginTransaction();
 
-			int affectedRows = await connection.ExecuteAsync(sql, new { Id = id });
+			try
+			{
+				string deleteHistorySql = @"
+					DELETE FROM reservation_history
+					WHERE reservation_id = @Id;
+					";
 
-			return affectedRows > 0;
+				await connection.ExecuteAsync(deleteHistorySql, new { Id = id }, transaction);
+
+				string deleteReservationSql = @"
+					DELETE FROM reservations
+					WHERE id = @Id;
+					";
+
+				int affectedRows = await connection.ExecuteAsync(deleteReservationSql, new { Id = id }, transaction);
+
+				transaction.Commit();
+
+				return affectedRows > 0;
+			}
+			catch
+			{
+				transaction.Rollback();
+				throw;
+			}
 		}
 	}
 
