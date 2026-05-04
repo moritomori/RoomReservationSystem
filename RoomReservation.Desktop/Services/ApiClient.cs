@@ -33,6 +33,24 @@ namespace RoomReservation.Desktop.Services
 			return await _httpClient.GetFromJsonAsync<List<User>>("api/users") ?? new List<User>();
 		}
 
+		public async Task DeleteUserAsync(int id)
+		{
+			var response = await _httpClient.DeleteAsync($"api/users/{id}");
+			response.EnsureSuccessStatusCode();
+		}
+
+		public async Task DeleteRoomAsync(int id)
+		{
+			var response = await _httpClient.DeleteAsync($"api/rooms/{id}");
+			response.EnsureSuccessStatusCode();
+		}
+
+		public async Task CreateRoomAsync(Room room)
+		{
+			var response = await _httpClient.PostAsJsonAsync("api/rooms", room);
+			response.EnsureSuccessStatusCode();
+		}
+
 		public async Task CancelReservationAsync(int id)
 		{
 			var response = await _httpClient.PostAsync($"api/reservations/{id}/cancel", null);

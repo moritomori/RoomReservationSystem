@@ -25,6 +25,55 @@ namespace RoomReservation.Desktop
 			}
 		}
 
+		private async void AddRoom_Click(object sender, RoutedEventArgs e)
+		{
+			var window = new AddRoomWindow();
+
+			if (window.ShowDialog() == true && window.Room != null)
+			{
+				try
+				{
+					await _apiClient.CreateRoomAsync(window.Room);
+					RoomsGrid.ItemsSource = await _apiClient.GetRoomsAsync();
+					MessageBox.Show("Room created.");
+				}
+				catch (Exception ex)
+				{
+					MessageBox.Show("Cannot create room: " + ex.Message);
+				}
+			}
+		}
+
+		private async void DeleteRoom_Click(object sender, RoutedEventArgs e)
+		{
+			if (RoomsGrid.SelectedItem is not Room room)
+			{
+				MessageBox.Show("Select room first.");
+				return;
+			}
+
+			var result = MessageBox.Show(
+				"Do you really want to delete selected room?",
+				"Confirm delete",
+				MessageBoxButton.YesNo);
+
+			if (result != MessageBoxResult.Yes)
+			{
+				return;
+			}
+
+			try
+			{
+				await _apiClient.DeleteRoomAsync(room.Id);
+				RoomsGrid.ItemsSource = await _apiClient.GetRoomsAsync();
+				MessageBox.Show("Room deleted.");
+			}
+			catch (Exception ex)
+			{
+				MessageBox.Show("Cannot delete room: " + ex.Message);
+			}
+		}
+
 		private async void LoadReservations_Click(object sender, RoutedEventArgs e)
 		{
 			try
@@ -48,6 +97,37 @@ namespace RoomReservation.Desktop
 				MessageBox.Show("Cannot load users: " + ex.Message);
 			}
 		}
+
+		private async void DeleteUser_Click(object sender, RoutedEventArgs e)
+		{
+			if (UsersGrid.SelectedItem is not User user)
+			{
+				MessageBox.Show("Select user first.");
+				return;
+			}
+
+			var result = MessageBox.Show(
+				"Do you really want to delete selected user?",
+				"Confirm delete",
+				MessageBoxButton.YesNo);
+
+			if (result != MessageBoxResult.Yes)
+			{
+				return;
+			}
+
+			try
+			{
+				await _apiClient.DeleteUserAsync(user.Id);
+				UsersGrid.ItemsSource = await _apiClient.GetUsersAsync();
+				MessageBox.Show("User deleted.");
+			}
+			catch (Exception ex)
+			{
+				MessageBox.Show("Cannot delete user: " + ex.Message);
+			}
+		}
+
 
 		private async void CancelReservation_Click(object sender, RoutedEventArgs e)
 		{

@@ -6,8 +6,13 @@
         <TabControl>
             <TabItem Header="Rooms">
                 <DockPanel>
-                    <Button DockPanel.Dock="Top" Content="Load rooms" Height="35" Width="140" Margin="10" HorizontalAlignment="Left" Click="LoadRooms_Click"/>
+                    <StackPanel DockPanel.Dock="Top" Orientation="Horizontal">
+                        <Button Content="Load rooms" Height="35" Width="140" Margin="10"  Click="LoadRooms_Click"/>
+                        <Button Content="Add room" Height="35" Width="140" Margin="10" Click="AddRoom_Click"/>
+                        <Button Content="Delete selected" Height="35" Width="140" Margin="10" Click="DeleteRoom_Click"/>
+                    </StackPanel>
                     <DataGrid x:Name="RoomsGrid" AutoGenerateColumns="True"/>
+
                 </DockPanel>
             </TabItem>
 
@@ -15,7 +20,7 @@
                 <DockPanel>
                     <StackPanel DockPanel.Dock="Top" Orientation="Horizontal">
                         <Button Content="Load reservations" Height="35" Width="140" Margin="10" Click="LoadReservations_Click"/>
-                        <Button Content="Cancel selected" Height="35" Width="140" Click="CancelReservation_Click"/>
+                        <Button Content="Cancel selected" Height="35" Width="140" Margin="10" Click="CancelReservation_Click"/>
                     </StackPanel>
                     <DataGrid x:Name="ReservationsGrid" AutoGenerateColumns="True"/>
                 </DockPanel>
@@ -23,7 +28,10 @@
 
             <TabItem Header="Users">
                 <DockPanel>
-                    <Button DockPanel.Dock="Top" Content="Load users" Height="35" Width="140" Margin="10" HorizontalAlignment="Left" Click="LoadUsers_Click"/>
+                    <StackPanel DockPanel.Dock="Top" Orientation="Horizontal">
+                        <Button  Content="Load users" Height="35" Width="140" Margin="10" HorizontalAlignment="Left" Click="LoadUsers_Click"/>
+                        <Button  Content="Delete selected" Height="35" Width="140" Margin="10" HorizontalAlignment="Left" Click="DeleteUser_Click"/>
+                    </StackPanel>
                     <DataGrid x:Name="UsersGrid" AutoGenerateColumns="True"/>
                 </DockPanel>
             </TabItem>
