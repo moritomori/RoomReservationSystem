@@ -102,6 +102,21 @@ namespace RoomReservation.Data.Repositories
 			return affectedRows > 0;
 		}
 
+		public async Task<bool> HasReservationsAsync(int userId)
+		{
+			using var connection = _connectionFactory.CreateConnection();
+
+			string sql = @"
+				SELECT COUNT(*)
+				FROM reservations
+				WHERE user_id = @UserId;
+				";
+
+			int count = await connection.ExecuteScalarAsync<int>(sql, new { UserId = userId });
+
+			return count > 0;
+		}
+
 		public async Task<bool> DeleteAsync(int id)
 		{
 			using var connection = _connectionFactory.CreateConnection();

@@ -250,6 +250,20 @@ namespace RoomReservation.Data.Repositories
 
 			return await connection.QueryAsync<ReservationListItemDto>(sql, new { UserId = userId });
 		}
+
+		public async Task<bool> DeleteAsync(int id)
+		{
+			using var connection = _connectionFactory.CreateConnection();
+
+			string sql = @"
+				DELETE FROM reservations
+				WHERE id = @Id;
+				";
+
+			int affectedRows = await connection.ExecuteAsync(sql, new { Id = id });
+
+			return affectedRows > 0;
+		}
 	}
 
 }

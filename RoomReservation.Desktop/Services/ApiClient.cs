@@ -36,7 +36,12 @@ namespace RoomReservation.Desktop.Services
 		public async Task DeleteUserAsync(int id)
 		{
 			var response = await _httpClient.DeleteAsync($"api/users/{id}");
-			response.EnsureSuccessStatusCode();
+
+			if (!response.IsSuccessStatusCode)
+			{
+				string error = await response.Content.ReadAsStringAsync();
+				throw new Exception(error);
+			}
 		}
 
 		public async Task DeleteRoomAsync(int id)
@@ -61,6 +66,17 @@ namespace RoomReservation.Desktop.Services
 		{
 			var response = await _httpClient.PutAsJsonAsync($"api/rooms/{room.Id}", room);
 			response.EnsureSuccessStatusCode();
+		}
+
+		public async Task DeleteReservationAsync(int id)
+		{
+			var response = await _httpClient.DeleteAsync($"api/reservations/{id}");
+
+			if (!response.IsSuccessStatusCode)
+			{
+				string error = await response.Content.ReadAsStringAsync();
+				throw new Exception(error);
+			}
 		}
 	}
 }

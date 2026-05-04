@@ -186,5 +186,35 @@ namespace RoomReservation.Desktop
 				MessageBox.Show("Cannot cancel reservation: " + ex.Message);
 			}
 		}
+
+		private async void DeleteReservation_Click(object sender, RoutedEventArgs e)
+		{
+			if (ReservationsGrid.SelectedItem is not Reservation reservation)
+			{
+				MessageBox.Show("Select reservation first.");
+				return;
+			}
+
+			var result = MessageBox.Show(
+				"Do you really want to delete selected reservation?",
+				"Confirm delete",
+				MessageBoxButton.YesNo);
+
+			if (result != MessageBoxResult.Yes)
+			{
+				return;
+			}
+
+			try
+			{
+				await _apiClient.DeleteReservationAsync(reservation.Id);
+				ReservationsGrid.ItemsSource = await _apiClient.GetReservationsAsync();
+				MessageBox.Show("Reservation deleted.");
+			}
+			catch (Exception ex)
+			{
+				MessageBox.Show("Cannot delete reservation: " + ex.Message);
+			}
+		}
 	}
 }

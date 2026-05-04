@@ -24,12 +24,27 @@ namespace RoomReservation.Web.Controllers.Api
 		[HttpDelete("{id}")]
 		public async Task<IActionResult> Delete(int id)
 		{
+			var user = await _userRepository.GetByIdAsync(id);
+
+			if (user == null)
+			{
+				return NotFound();
+			}
+
+			bool hasReservations = await _userRepository.HasReservationsAsync(id);
+
+			if (hasReservations)
+			{
+				return BadRequest("User has reservations. Delete user's reservations first.");
+			}
+
 			bool deleted = await _userRepository.DeleteAsync(id);
 
 			if (!deleted)
 			{
 				return NotFound();
 			}
+
 			return NoContent();
 		}
 

@@ -306,5 +306,25 @@ namespace RoomReservation.Web.Controllers.Api
 					newData.NumberOfPeople.ToString());
 			}
 		}
+
+		[HttpDelete("{id}")]
+		public async Task<IActionResult> Delete(int id)
+		{
+			var reservation = await _reservationRepository.GetByIdAsync(id);
+
+			if (reservation == null)
+			{
+				return NotFound();
+			}
+
+			bool deleted = await _reservationRepository.DeleteAsync(id);
+
+			if (!deleted)
+			{
+				return NotFound();
+			}
+
+			return NoContent();
+		}
 	}
 }
