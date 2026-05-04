@@ -1,0 +1,35 @@
+﻿@model IEnumerable<RoomReservation.Domain.Models.ReservationHistory>
+
+@{
+	ViewData["Title"] = "Reservation history";
+}
+
+<h1>Reservation history</h1>
+
+<h3>Reservation ID: @ViewBag.ReservationId</h3>
+
+<p>
+	<a asp-action="MyReservations">Back to my reservations</a>
+</p>
+
+<table border="1" cellpadding="6">
+    <thead>
+        <tr>
+            <th>Changed at</th>
+            <th>Field</th>
+            <th>Old value</th>
+            <th>New value</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.ChangedAt</td>
+                <td>@item.FieldName</td>
+                <td>@item.OldValue</td>
+                <td>@item.NewValue</td>
+            </tr>
+        }
+    </tbody>
+</table>

@@ -38,16 +38,22 @@
                 <td>
                     @if (reservation.Status == Status.Active && reservation.StartTime > DateTime.Now)
                     {
-                        <a asp-action="Edit" asp-route-id="@reservation.Id">Edit</a>
+                        <a asp-action="History" asp-route-id="@reservation.Id">History</a>
 
-                        <form asp-action="Cancel" method="post" style="display:inline;">
-                            <input type="hidden" name="id" value="@reservation.Id" />
-                            <button type="submit">Cancel</button>
-                        </form>
-                    }
-                    else
-                    {
-                        <span>Not available</span>
+                        @if (reservation.Status == Status.Active && reservation.StartTime > DateTime.Now)
+                        {
+                            <span>|</span>
+                            <a asp-action="Edit" asp-route-id="@reservation.Id">Edit</a>
+
+                            <form asp-action="Cancel" method="post" style="display:inline;">
+                                <input type="hidden" name="id" value="@reservation.Id" />
+                                <button type="submit">Cancel</button>
+                            </form>
+                        }
+                        else
+                        {
+                            <span>| Not available</span>
+                        }
                     }
                 </td>
             </tr>

@@ -315,6 +315,34 @@ namespace RoomReservation.Web.Controllers
 			return RedirectToAction(nameof(MyReservations));
 		}
 
+		public async Task<IActionResult> History(int id)
+		{
+			int? userId = HttpContext.Session.GetInt32("UserId");
+
+			if (userId == null)
+			{
+				return RedirectToAction("Login", "Account");
+			}
+
+			var reservation = await _reservationRepository.GetByIdAsync(id);
+
+			if (reservation == null)
+			{
+				return NotFound();
+			}
+
+			if (reservation.UserId != userId.Value)
+			{
+				return Forbid();
+			}
+
+			var history = await _reservationRepository.GetHistoryAsync(id);
+
+			ViewBag.ReservationId = id;
+
+			return View(history);
+		}
+
 		[HttpPost]
 		public async Task<IActionResult> Cancel(int id)
 		{
