@@ -1,5 +1,6 @@
 ﻿using Dapper;
 using RoomReservation.Common;
+using RoomReservation.Common.DTOs;
 using RoomReservation.Data.Database;
 using RoomReservation.Domain.Models;
 
@@ -203,7 +204,7 @@ namespace RoomReservation.Data.Repositories
 			});
 		}
 
-		public async Task<IEnumerable<object>> GetRoomUsageStatisticsAsync(DateTime from, DateTime to)
+		public async Task<IEnumerable<RoomUsageStatisticDto>> GetRoomUsageStatisticsAsync(DateTime from, DateTime to)
 		{
 			using var connection = _connectionFactory.CreateConnection();
 
@@ -212,8 +213,7 @@ namespace RoomReservation.Data.Repositories
 					r.id AS RoomId,
 					r.name AS RoomName,
 					COUNT(res.id) AS ReservationCount,
-					COALESCE(SUM((julianday(res.end_time) - julianday(res.start_time)) * 24.0), 0) AS ReservedHours
-				FROM rooms r
+					COALESCE(SUM((julianday(res.end_time) - julianday(res.start_time)) * 24.0), 0.0) AS ReservedHours				FROM rooms r
 				LEFT JOIN reservations res ON r.id = res.room_id
 					AND res.status = @ActiveStatus
 					AND res.start_time >= @From
@@ -222,7 +222,7 @@ namespace RoomReservation.Data.Repositories
 				ORDER BY ReservedHours DESC;
 				";
 
-			return await connection.QueryAsync<object>(sql, new
+			return await connection.QueryAsync<RoomUsageStatisticDto>(sql, new
 			{
 				From = from,
 				To = to,

@@ -1,0 +1,47 @@
+﻿@model IEnumerable<RoomReservation.Common.DTOs.RoomUsageStatisticDto>
+
+@{
+    ViewData["Title"] = "Room usage statistics";
+}
+
+<h1>Room usage statistics</h1>
+
+<p>
+    <a asp-controller="Rooms" asp-action="Index">Back to rooms</a>
+</p>
+
+<form asp-action="Rooms" method="get">
+    <div>
+        <label>From</label>
+        <input name="from" type="datetime-local" value="@(((DateTime)ViewBag.From).ToString("yyyy-MM-ddTHH:mm"))" />
+    </div>
+
+    <div>
+        <label>To</label>
+        <input name="to" type="datetime-local" value="@(((DateTime)ViewBag.To).ToString("yyyy-MM-ddTHH:mm"))" />
+    </div>
+
+    <button type="submit">Show statistics</button>
+</form>
+
+<div asp-validation-summary="All"></div>
+
+<table border="1" cellpadding="6">
+    <thead>
+        <tr>
+            <th>Room</th>
+            <th>Reservations count</th>
+            <th>Reserved hours</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.RoomName</td>
+                <td>@item.ReservationCount</td>
+                <td>@Math.Round(item.ReservedHours, 2)</td>
+            </tr>
+        }
+    </tbody>
+</table>
