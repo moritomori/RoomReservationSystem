@@ -12,6 +12,7 @@ namespace RoomReservation.Web
 			var builder = WebApplication.CreateBuilder(args);
 
 			builder.Services.AddControllersWithViews();
+			builder.Services.AddSession();
 
 			var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
 				?? "Data Source=room_reservation.db";
@@ -22,8 +23,6 @@ namespace RoomReservation.Web
 			builder.Services.AddScoped<UserRepository>();
 			builder.Services.AddScoped<PasswordHasher>();
 			builder.Services.AddScoped<ReservationRepository>();
-			builder.Services.AddControllersWithViews();
-			builder.Services.AddSession();
 
 			var app = builder.Build();
 
