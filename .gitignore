@@ -361,3 +361,15 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+
+# Local SQLite databases
+*.db
+*.db-shm
+*.db-wal
+
+# Postman local workspace files
+.postman/
+postman/
+
+# Local app settings
+appsettings.Local.json
