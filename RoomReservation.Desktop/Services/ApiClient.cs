@@ -15,7 +15,7 @@ namespace RoomReservation.Desktop.Services
 				BaseAddress = new Uri("http://localhost:5244/")
 			};
 
-			_httpClient.DefaultRequestHeaders.Add("X-Api-Token", "secret-token-123");
+			_httpClient.DefaultRequestHeaders.Add("X-Api-Token", "CHANGE_ME_FOR_LOCAL_DEVELOPMENT");
 		}
 
 		public async Task<List<Room>> GetRoomsAsync()
